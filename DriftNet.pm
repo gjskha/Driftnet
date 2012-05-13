@@ -129,14 +129,15 @@ sub sync_db {
     if (str2time ($response->{_headers}->{"last-modified"}) > str2time (${$last_sync->{values}}[0])) {
         my $dump = $ua->get($self->{url});
         my $json = JSON->new;
-        if $ua-
-        $decoded = $json->decode($dump->decoded_content);
-        $self->{collection}->drop;
-        foreach my $hr (@{$decoded}) {
-            $self->{collection}->insert($hr);
+        if ($dump->is_success) {
+            $decoded = $json->decode($dump->decoded_content);
+            $self->{collection}->drop;
+            foreach my $hr (@{$decoded}) {
+                $self->{collection}->insert($hr);
+            }
+            $self->{collection}->ensure_index({"url" => "ascending"});
+            $self->{collection}->insert({'last_sync' => $response->{_headers}->{'last-modified'}});
         }
-        $self->{collection}->ensure_index({"url" => "ascending"});
-        $self->{collection}->insert({'last_sync' => $response->{_headers}->{'last-modified'}});
     }
 }
 
