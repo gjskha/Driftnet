@@ -4,14 +4,11 @@ DriftNet
 SYNOPSIS
 --------
 
-    my $net = Driftnet->new(%opts);
+    my $net = Driftnet->new( key => *key*,
+                             port => *port*,
+                             host => *host*, 
+                           );
 
-    # investigate a chunk of HTML, for example in an email.
-    if ( $net->phishes_found($message)) {
-        $phishes = $net->phishes;
-        # do stuff with the JSON records in $phishes
-    }
-    
     # investigate a chunk of HTML, for example in an email.
     if ( $net->phishes_found($message)) {
         $phishes = $net->phishes;
