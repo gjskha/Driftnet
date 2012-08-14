@@ -41,10 +41,6 @@ if ( $net->is_phish("http://www.this.is/owned")) {
 
 $net->sync_db;
 
-# dump known information
-
-$net->db_stats;
-
 =back
 
 =head1 DESCRIPTION
@@ -139,17 +135,6 @@ sub sync_db {
             $self->{collection}->insert({'last_sync' => $response->{_headers}->{'last-modified'}});
         }
     }
-}
-
-sub db_stats {
-    my $self = shift;
-    #my $ic = $self->{collection}->count;
-    foreach my $p (@{$self->{phishes}}) {
-        print Dumper $p, "\n";
-    }
-}
-
-sub submit_phish {
 }
 
 1;

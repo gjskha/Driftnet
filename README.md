@@ -1,6 +1,11 @@
 DriftNet
 ========
 
+DESCRIPTION
+-----------
+
+DriftNet stores and queries the PhishTank database as collection of JSON documents in MongoDB.
+
 SYNOPSIS
 --------
 
@@ -24,11 +29,6 @@ SYNOPSIS
     # sync with the remote database.
     $net->sync_db;
 
-DESCRIPTION
------------
-
-DriftNet stores and queries the PhishTank database as collection of JSON documents in MongoDB.
-
 DEPENDENCIES
 ------------
 Depends on the following Perl modules:
@@ -38,3 +38,6 @@ Depends on the following Perl modules:
   - JSON
   - HTML::TokeParser::Simple
   - Date::Parse
+
+If you are going to write a milter, you obviously need one of Perl's milter modules too. See "milter.pl" in this directory for an example.
+
