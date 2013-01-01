@@ -4,40 +4,49 @@ DriftNet
 DESCRIPTION
 -----------
 
-DriftNet stores and queries the PhishTank database as collection of JSON documents in MongoDB.
+DriftNet is a Perl library that stores and queries the [PhishTank database](http://www.phishtank.com) as collection of JSON documents in MongoDB. PhishTank is:
+
+> a collaborative clearing house for data and information about phishing on the
+> Internet. Also, PhishTank provides an open API for developers and researchers
+> to integrate anti-phishing data into their applications at no charge.
 
 SYNOPSIS
 --------
 
-    my $net = Driftnet->new( key => *key*,
-                             port => *port*,
-                             host => *host*, 
+    # defaults will be used if these are not provided.
+    my $net = Driftnet->new( key => <em>key</em>,
+                             port => <em>port</em>,
+                             host => <em>host</em>, 
                            );
 
-    # investigate a chunk of HTML, for example in an email.
-    if ( $net->phishes_found($message)) {
+    # investigate a chunk of text, for example in an email.
+    if ( $net->phishes_found($message) ) {
         $phishes = $net->phishes;
-        # do stuff with the JSON records.
+        # do stuff with the JSON records in $phishes
     }
     
     # investigate a specific URL.
-    if ( $net->is_phish("http://www.this.is/owned")) {
+    if ( $net->is_phish("http://www.this.is/owned") ) {
         $phish = $net->phishes;
         # do stuff with the JSON record in $phish
     }
     
-    # sync with the remote database.
+    # sync with the remote PhishTank database.
     $net->sync_db;
 
 DEPENDENCIES
 ------------
-Depends on the following Perl modules:
+
+The library depends on the following Perl modules:
 
   - MongoDB
   - LWP::UserAgent
   - JSON
-  - HTML::TokeParser::Simple
+  - URI::Find::Schemeless
   - Date::Parse
 
-If you are going to write a milter, you obviously need one of Perl's milter modules too. See "milter.pl" in this directory for an example.
+MILTER
+------
+
+One obvious application for this data is for the purpose of scanning incoming emails on a mail server, in order to see if any PhishTank entries are found within them.  Towards that end, a common method is to use the milter protocol, which was originally devised for the sendmail program. If you are going to write a milter likewise in Perl, you will also need one of Perl's milter modules installed. See "milter.pl" in this directory for an example implementation. Instructions for installation and maintenance of milters are beyond the scope of this document, but [milter.org](http://www.milter.org) is a good starting point. 
 

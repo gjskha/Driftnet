@@ -5,7 +5,7 @@ use Date::Parse;
 use MongoDB;
 use JSON;
 use Data::Dumper;
-use HTML::TokeParser::Simple; 
+use URI::Find::Schemeless;
 
 =head1 NAME
 
@@ -50,7 +50,7 @@ JSON documents.
 
 =head1 DEPENDENCIES
 
-Depends on the following Perl modules:
+Depends on mongodb and the following Perl modules:
 
 =over 4
 
@@ -60,7 +60,7 @@ Depends on the following Perl modules:
 
 =item JSON
 
-=item HTML::TokeParser::Simple
+=item URI::Find::Schemeless
 
 =item Date::Parse
 
@@ -90,27 +90,23 @@ sub phishes_found {
     my $self = shift;
     my $doc = shift;
     $self->{phish_count} = 0;
-    my $parser = HTML::TokeParser::Simple->new(string => $doc);
-    while (my $token = $parser->get_token) {
-        if ($token->is_tag('a')) {
-            my $href = $token->get_attr('href');
-            if ($self->is_phish($href)) {
-                $self->{phish_count}++;
-            }
-        }
-    }
+    my $finder = URI::Find::Schemeless->new(sub { $self->{phish_count}++ if $self->is_phish($_[0]) });
+    $finder->find(\$doc);
     return $self->{phish_count};
 }
 
 sub is_phish {
     my ($self, $url) = @_;
-    my $cursor = $self->{collection}->find({ "url" => $url });
+    print "in is_phish, url is $url\n";
+    #my $cursor = $self->{collection}->find({ "url" => $url });
+    my $cursor = $self->{collection}->find({ "url" => qr/$url?/ });
     if (my $record = $cursor->next) {
         push(@{$self->{phishes}}, $record);
         return 1; 
     }       
 }
 
+# phishes returns an array of hashrefs corresponing to the individual JSON record(s)
 sub phishes {
     my $self = shift;
     return $self->{phishes};
@@ -120,15 +116,15 @@ sub sync_db {
     my $self = shift;
     my $ua = LWP::UserAgent->new;
     my $response = $ua->head($self->{url});
-    # TDB: figure out how to make the more straightforward way work properly.
     my $last_sync = $self->{database}->run_command({distinct => "driftnet", key => "last_sync"});
+    # Has the database been updated since we last synced with the remote Phishtank database?
     if (str2time ($response->{_headers}->{"last-modified"}) > str2time (${$last_sync->{values}}[0])) {
         my $dump = $ua->get($self->{url});
         my $json = JSON->new;
         if ($dump->is_success) {
-            $decoded = $json->decode($dump->decoded_content);
+            my $inflated = $json->decode($dump->decoded_content);
             $self->{collection}->drop;
-            foreach my $hr (@{$decoded}) {
+            foreach my $hr (@{$inflated}) {
                 $self->{collection}->insert($hr);
             }
             $self->{collection}->ensure_index({"url" => "ascending"});

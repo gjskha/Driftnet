@@ -1,4 +1,5 @@
 app_key
+SAMP_MSG
 blib/
 .build/
 _build/
