@@ -4,7 +4,6 @@ use LWP::UserAgent;
 use Date::Parse;
 use MongoDB;
 use JSON;
-use Data::Dumper;
 use URI::Find::Schemeless;
 
 =head1 NAME
@@ -98,7 +97,6 @@ sub phishes_found {
 sub is_phish {
     my ($self, $url) = @_;
     print "in is_phish, url is $url\n";
-    #my $cursor = $self->{collection}->find({ "url" => $url });
     my $cursor = $self->{collection}->find({ "url" => qr/$url?/ });
     if (my $record = $cursor->next) {
         push(@{$self->{phishes}}, $record);
