@@ -1,0 +1,11 @@
+MANIFEST
+README
+LICENSE
+Todo
+Changes
+Makefile.PL
+lib/DriftNet.pm
+lib/DriftNet/Phish.pm
+t/001_load.t
+scripts/driftnet_milter.pl
+scripts/driftnet_update_db.pl

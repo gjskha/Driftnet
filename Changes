@@ -1,0 +1,7 @@
+Revision history for Perl module DriftNet
+
+0.01 2012 
+    - initial revision
+
+0.04 Tue May  7 17:10:26 2013
+    - Added DriftNet::Phish, changed project layout

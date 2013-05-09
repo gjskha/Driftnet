@@ -67,6 +67,8 @@ Depends on mongodb and the following Perl modules:
 
 =cut
 
+our $VERSION = '0.04';
+
 sub new {
     my $class = shift;
     my %opts = @_;
@@ -96,7 +98,6 @@ sub phishes_found {
 
 sub is_phish {
     my ($self, $url) = @_;
-    print "in is_phish, url is $url\n";
     my $cursor = $self->{collection}->find({ "url" => qr/$url?/ });
     if (my $record = $cursor->next) {
         push(@{$self->{phishes}}, $record);

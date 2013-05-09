@@ -50,3 +50,11 @@ MILTER
 
 One obvious application for this data is for the purpose of scanning incoming emails on a mail server, in order to see if any PhishTank entries are found within them.  Towards that end, a common method is to use the milter protocol, which was originally devised for the sendmail program. If you are going to write a milter likewise in Perl, you will also need one of Perl's milter modules installed. See "driftnet_milter.pl" in this directory for an example implementation. Instructions for installation and maintenance of milters are beyond the scope of this document, but [milter.org](http://www.milter.org) is a good starting point. 
 
+INSTALLATION 
+-------------
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
