@@ -6,6 +6,7 @@ sub new {
     my $class = shift;
     my $data = shift;
     my $self = {};
+
     while ( my ($k, $v) = each(%$data)) {
         $self->{$k} = $v;
     }
@@ -22,14 +23,17 @@ sub url {
     my $self = shift;
     return $self->{url};
 }
+
 sub phish_detail_url {
     my $self = shift;
     return $self->{phish_detail_url};
 }
+
 sub submission_time {
     my $self = shift;
     return $self->{submission_time};
 }
+
 sub verified {
     my $self = shift;
     return $self->{verified};

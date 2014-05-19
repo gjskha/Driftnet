@@ -19,29 +19,38 @@ $milter->register('driftnet', {%my_milter_callbacks}, SMFI_CURR_ACTS);
 $milter->main();
 
 sub my_header_callback {
+
     my($ctx, $field, $value) = @_;
+
     if (lc $field eq 'subject') {
         $ctx->{subject} = $value;
     }
+
+    # search for some common encodings
     if (lc $field eq 'content-transfer-encoding') {
-	if ($value =~ /base64/oi) {
+       
+	if ( lc $value eq 'base64' ) {
             $ctx->{encoding} = "base64";
-	} elsif ($value =~ /quoted-printable/oi) {
+	} elsif ($value eq 'quoted-printable') {
             $ctx->{encoding} = "qp";
-        } 
+        }
+ 
     } else {
         $ctx->{encoding} = "default";
     }
+
     return SMFIS_CONTINUE;
 }
 
 sub my_body_callback {
+
     my $ctx = shift;
     my $body_chunk = shift;
     my $body_ref = $ctx->getpriv();
     ${$body_ref} .= $body_chunk;
     $ctx->setpriv($body_ref);
     return SMFIS_CONTINUE;
+
 }
 
 sub my_eom_callback {
@@ -62,14 +71,16 @@ sub my_eom_callback {
     if ($net->phishes_found($body)) {
 
         my $phishes = $net->phishes;
-
-        foreach my $phish (@$phishes) {
+        foreach my $phish (@{$phishes}) {
            $ctx->addheader("X-Driftnet-Status", "Possible phish, please see $phish->{phish_detail_url}" ); 
         }
 
     }        
+
     $ctx->addheader("X-Driftnet-Seen", "true" );    
     $ctx->chgheader("Subject", 0, "[Phish] $ctx->{subject}" );    
     $ctx->setpriv(undef);
+
     return SMFIS_ACCEPT;
+
 }
