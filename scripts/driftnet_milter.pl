@@ -29,9 +29,9 @@ sub my_header_callback {
     # search for some common encodings
     if (lc $field eq 'content-transfer-encoding') {
        
-	if ( lc $value eq 'base64' ) {
+	if (lc $value eq 'base64') {
             $ctx->{encoding} = "base64";
-	} elsif ($value eq 'quoted-printable') {
+	} elsif (lc $value eq 'quoted-printable') {
             $ctx->{encoding} = "qp";
         }
  
